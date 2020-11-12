@@ -15,15 +15,12 @@ public class Programa extends Thread{
     
     public void run() {
         try {
-            //los escritores vuelven a escribir
-            while (true) {
-                for (int i = 0; i < instrucciones.length; i++) {
-                    Thread.sleep(2200);
-                    System.out.println("La instrucción " + instrucciones[i] + " se esta ejecutando por el usuario " + usuario.toString());
-                    Thread.sleep(700);
-                    System.out.println("La instrucción " + instrucciones[i] + " se ejecutó por el usuario " + usuario.toString());
-                }
-         }
+            for (int i = 0; i < instrucciones.length; i++) {
+                Thread.sleep(2200);
+                System.out.println("La instrucción " + instrucciones[i] + " se esta ejecutando por el usuario " + usuario.toString());
+                Thread.sleep(700);
+                System.out.println("La instrucción " + instrucciones[i] + " se ejecutó por el usuario " + usuario.toString());
+            }
         } catch (InterruptedException ie) {
         }
     }
