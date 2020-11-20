@@ -7,18 +7,20 @@ public class Programa extends Thread{
     private String[] instrucciones;
     private Usuario usuario;
     private Recurso[] recursos;
+    private int cantInstruccionesEjecutadas;
     
     public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos){
         this.nombre = nombre;
         this.instrucciones = instrucciones;
         this.usuario = usuario;
         this.recursos = recursos;
+        this.cantInstruccionesEjecutadas = 0;
     }
     
     public void run() {
         try {
             for (int i = 0; i < instrucciones.length; i++) {
-                System.out.println("La instrucción " + instrucciones[i] + " se esta ejecutando por el programa" + nombre + "por el usuario " + usuario.toString());
+                System.out.println("La instrucción " + instrucciones[i] + " se esta ejecutando por el programa " + nombre + " por el usuario " + usuario.toString());
                 Thread.sleep(1000);
                 switch(instrucciones[i]) {
                     case "S0":
@@ -36,6 +38,7 @@ public class Programa extends Thread{
                     default:
                 }
                 Thread.sleep(700);
+                this.cantInstruccionesEjecutadas++;
                 System.out.println("La instrucción " + instrucciones[i] + " se ejecutó por el programa " + nombre + " por el usuario " + usuario.toString());
             }
         } catch (InterruptedException ie) {
