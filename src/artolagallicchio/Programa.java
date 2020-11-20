@@ -7,6 +7,7 @@ public class Programa extends Thread{
     private String[] instrucciones;
     private Usuario usuario;
     private Recurso[] recursos;
+    private int cantInstruccionesEjecutadas;
     private String permisoRequerido;
     
     public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido){
@@ -14,6 +15,7 @@ public class Programa extends Thread{
         this.instrucciones = instrucciones;
         this.usuario = usuario;
         this.recursos = recursos;
+        this.cantInstruccionesEjecutadas = 0;
         this.permisoRequerido = permisoRequerido;
     }
     
@@ -24,7 +26,7 @@ public class Programa extends Thread{
                 throw new Exception("El usuario no tiene permisos para ejecutar este programa");
             }
             for (int i = 0; i < instrucciones.length; i++) {
-                System.out.println("La instrucción " + instrucciones[i] + " se esta ejecutando por el programa" + nombre + "por el usuario " + usuario.toString());
+                System.out.println("La instrucción " + instrucciones[i] + " se esta ejecutando por el programa " + nombre + " por el usuario " + usuario.toString());
                 Thread.sleep(1000);
                 switch(instrucciones[i]) {
                     case "S0":
@@ -42,8 +44,10 @@ public class Programa extends Thread{
                     default:
                 }
                 Thread.sleep(700);
+                this.cantInstruccionesEjecutadas++;
                 System.out.println("La instrucción " + instrucciones[i] + " se ejecutó por el programa " + nombre + " por el usuario " + usuario.toString());
             }
+        }catch (InterruptedException ie) {
         }catch (Exception e) {
             System.out.println("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios.");
             this.interrupt();
