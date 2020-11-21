@@ -9,14 +9,24 @@ public class Programa extends Thread{
     private Recurso[] recursos;
     private int cantInstruccionesEjecutadas;
     private String permisoRequerido;
+    private Memoria memoria;
     
-    public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido){
+    public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido, Memoria memoria){
         this.nombre = nombre;
         this.instrucciones = instrucciones;
         this.usuario = usuario;
         this.recursos = recursos;
         this.cantInstruccionesEjecutadas = 0;
         this.permisoRequerido = permisoRequerido;
+        this.memoria = memoria;
+    }
+    
+    public int getTamañoNecesario(){
+        return instrucciones.length - cantInstruccionesEjecutadas;
+    }
+    
+    public String[] getInstrucciones(){
+        return this.instrucciones;
     }
     
     public void run() {
