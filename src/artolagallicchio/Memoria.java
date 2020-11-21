@@ -16,12 +16,31 @@ public class Memoria {
                 encontreDisponible = true;
                 this.memoria[i].setIntruccionesAEjecutar(programa.getInstrucciones());
                 this.memoria[i].particionEnUso();
+                programa.setParticionAsignada(this.memoria[i].getId());
             }
         }
         return encontreDisponible;
     }
+    
+    public void liberarParticion(int idParticion){
+        for (int i = 0; i < this.memoria.length; i++) {
+            if (this.memoria[i].getId() == idParticion) {
+                this.memoria[i].liberarParticion();
+            }
+        }
+    }
       
     public ColaDeEspera getCola(){
         return this.colaDeEspera;
+    }
+
+    Particion getParticion(int idParticion) {
+        Particion resultado = null;
+        for (int i = 0; i < this.memoria.length; i++) {
+            if (this.memoria[i].getId() == idParticion) {
+                resultado = this.memoria[i];
+            }
+        }
+        return resultado;
     }
 }

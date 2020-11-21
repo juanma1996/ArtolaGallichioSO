@@ -1,11 +1,12 @@
 package artolagallicchio;
 
 public class ArtolaGallicchio {
+    
     public static void main(String[] args) {
         try{
-            Particion particion0 = new Particion(20, 0, 19);
-            Particion particion1 = new Particion(30, 20, 49);
-            Particion particion2 = new Particion(50, 50, 99);
+            Particion particion0 = new Particion(20, 0, 19, 0);
+            Particion particion1 = new Particion(30, 20, 49, 1);
+            Particion particion2 = new Particion(50, 50, 99, 2);
             
             Particion[] particiones = new Particion[]{particion0,particion1,particion2};
             Memoria memoria = new Memoria(particiones,50);
@@ -39,11 +40,14 @@ public class ArtolaGallicchio {
             while(!colaDeEspera.esVacio()){
                 Programa proceso = colaDeEspera.dequeue();
                 if (!memoria.asignarAParticion(proceso.getTamañoNecesario(), proceso)) {
+                    System.out.println("SE ENCOLA EL PROCESO: " + proceso.getName());
                     colaDeEspera.enqueue(proceso);
                 }else{
+                    System.out.println("SE ejecuta el PROCESO: " + proceso.getName());
                     proceso.run();
                 }
             }
+            System.out.println("SE TERMINO LA EJECUCION");
         }catch (Exception e) {
         }
     }   
