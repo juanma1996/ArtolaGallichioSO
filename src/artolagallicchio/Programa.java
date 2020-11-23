@@ -16,8 +16,9 @@ public class Programa extends Thread{
     private Memoria memoria;
     private int quantum;
     private int idParticionAsignada;
+    private String colorProceso;
     
-    public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido, Memoria memoria, int cantInstruccionesEjecutadasTotales){
+    public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido, Memoria memoria, int cantInstruccionesEjecutadasTotales,String colorProceso){
         this.nombre = nombre;
         this.instrucciones = instrucciones;
         this.usuario = usuario;
@@ -26,6 +27,7 @@ public class Programa extends Thread{
         this.cantInstruccionesEjecutadasTotales = cantInstruccionesEjecutadasTotales;
         this.permisoRequerido = permisoRequerido;
         this.memoria = memoria;
+        this.colorProceso = colorProceso;
     }
     
     public int getTamañoNecesario(){
@@ -47,12 +49,12 @@ public class Programa extends Thread{
             this.cantInstruccionesEjecutadas = 0;
             this.quantum = 10;
             if (!usuario.TienePermisos(this.permisoRequerido)) {
-                System.out.println("El usuario no tiene permisos para ejecutar este programa");
+                imprimirConColor("El usuario no tiene permisos para ejecutar este programa");
                 this.finalize();
             }
             String[] instruccionesAEjecutar = this.memoria.getParticion(this.idParticionAsignada).getInstrucciones();
             for (int i = 0; i < instruccionesAEjecutar.length && this.quantum > 0; i++) {
-                System.out.println("La instrucción " + instruccionesAEjecutar[i] + " se esta ejecutando por el programa " + nombre + " por el usuario " + usuario.toString());
+                imprimirConColor("La instrucción " + instruccionesAEjecutar[i] + " se esta ejecutando por el programa " + nombre + " por el usuario " + usuario.toString());
                 Thread.sleep(1000);
                 switch(instruccionesAEjecutar[i]) {
                     case "S0":
@@ -76,14 +78,14 @@ public class Programa extends Thread{
                 Thread.sleep(700);
                 this.cantInstruccionesEjecutadas++;
                 this.cantInstruccionesEjecutadasTotales++;
-                System.out.println("La instrucción " + instruccionesAEjecutar[i] + " se ejecutó por el programa " + nombre + " por el usuario " + usuario.toString());
+                imprimirConColor("La instrucción " + instruccionesAEjecutar[i] + " se ejecutó por el programa " + nombre + " por el usuario " + usuario.toString());
             }
             this.memoria.liberarParticion(idParticionAsignada);
             this.memoria.imprimirMemoria();
             if (this.cantInstruccionesEjecutadas < instruccionesAEjecutar.length) {
                 this.memoria.getCola().imprimirCola();
-                System.out.println("El programa " + nombre + " TERMINÓ POR QUANTUM Y ERA ejecutado por el usuario " + usuario.toString());
-                Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.recursos,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales);
+                imprimirConColor("El programa " + nombre + " TERMINÓ POR QUANTUM Y ERA ejecutado por el usuario " + usuario.toString());
+                Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.recursos,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales,this.colorProceso);
                 this.memoria.getCola().enqueue(nuevoPrograma);
                 this.memoria.imprimirMemoria();
                 this.memoria.getCola().imprimirCola();
@@ -91,7 +93,7 @@ public class Programa extends Thread{
             this.finalize();
         }catch (InterruptedException ie) {
             this.memoria.liberarParticion(idParticionAsignada);
-            System.out.println("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios.");
+            imprimirConColor("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios.");
             this.interrupt();
         }catch (Exception e) {
             this.memoria.liberarParticion(idParticionAsignada);
@@ -106,7 +108,11 @@ public class Programa extends Thread{
        return this.nombre;
    }
 
-    void setParticionAsignada(int id) {
+    public void setParticionAsignada(int id) {
         this.idParticionAsignada = id;
+    }
+    
+    public void imprimirConColor(String mensaje){
+        System.out.println(this.colorProceso + mensaje +  "\u001B[0m");
     }
 }

@@ -33,25 +33,26 @@ public class ArtolaGallicchio {
             
             ColaDeEspera colaDeEspera = memoria.getCola();
             
-            colaDeEspera.enqueue(new Programa("primero",instrucciones0,nuevoUsuario,recursos,"I3", memoria,0));
-            colaDeEspera.enqueue(new Programa("segundo",instrucciones1, nuevoUsuario,recursos,"I3", memoria,0));
-            colaDeEspera.enqueue(new Programa("tercero",instrucciones2, nuevoUsuarioDos,recursos,"I3", memoria,0));
+            colaDeEspera.enqueue(new Programa("primero",instrucciones0,nuevoUsuario,recursos,"I3", memoria,0,"\u001b[31m"));
+            colaDeEspera.enqueue(new Programa("segundo",instrucciones1, nuevoUsuario,recursos,"I3", memoria,0,"\u001b[32m"));
+            colaDeEspera.enqueue(new Programa("tercero",instrucciones2, nuevoUsuarioDos,recursos,"I3", memoria,0,"\u001b[35m"));
             while (true){
-                Thread.sleep(10000);     
+                if (memoria.getCola().esVacio()) {
+                    Thread.sleep(10000);
+                }                    
                 while(!memoria.getCola().esVacio()){
                     colaDeEspera = memoria.getCola();
                     colaDeEspera.imprimirCola();
                     memoria.imprimirMemoria();
                     Programa proceso = colaDeEspera.dequeue();
                     if (!memoria.asignarAParticion(proceso.getTamañoNecesario(), proceso)) {
-                        System.out.println("SE ENCOLA EL PROCESO: " + proceso.toString());
+                        proceso.imprimirConColor("SE ENCOLA EL PROCESO: " + proceso.toString());
                         colaDeEspera.enqueue(proceso);
                     }else{
-                        System.out.println("SE ejecuta el PROCESO: " + proceso.toString());
+                        proceso.imprimirConColor("SE ejecuta el PROCESO: " + proceso.toString());
                         proceso.start();
                     }
                     colaDeEspera.imprimirCola();
-                    System.out.println("SE TERMINO LA EJECUCION");
                 }
             }        
         }catch (Exception e) {
