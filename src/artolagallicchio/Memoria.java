@@ -43,4 +43,13 @@ public class Memoria {
         }
         return resultado;
     }
+    
+    public void imprimirMemoria(){
+        String imp = "Memoria: | "; 
+        for (int i = 0; i < this.memoria.length; i++) { 
+            imp += this.memoria[i].toString() + " | "; 
+        } 
+        System.out.println(imp); 
+        System.out.println(""); 
+    }    
 }

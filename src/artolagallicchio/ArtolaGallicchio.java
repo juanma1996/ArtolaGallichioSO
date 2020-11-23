@@ -17,9 +17,9 @@ public class ArtolaGallicchio {
             String[] permisosUsuarioDos = {"I3"};
             Usuario nuevoUsuarioDos = new Usuario("Juanma",permisosUsuarioDos);
 
-            String[] instrucciones0 = {"S0","S1","L0","S0","L0","S0","L1","L0","S0","S1","L1","L0"};
-            String[] instrucciones1 = {"S1","L1","S0","L0"};
-            String[] instrucciones2 = {"S1","S0","L0","L1","S0","L0","S1","S0","L0","L1","S0","L0"};
+            String[] instrucciones0 = {"S0","S1","L0","S0","L0","S0","L1","L0","S0","S1","L1","L0", "ultima"};
+            String[] instrucciones1 = {"S1","L1","S0","L0","ultima"};
+            String[] instrucciones2 = {"S1","S0","L0","L1","S0","L0","S1","S0","L0","L1","S0","L0","ultima"};
 
 
             Monitor monitor0 = new Monitor();
@@ -33,21 +33,27 @@ public class ArtolaGallicchio {
             
             ColaDeEspera colaDeEspera = memoria.getCola();
             
-            colaDeEspera.enqueue(new Programa("primero",instrucciones0,nuevoUsuario,recursos,"I3", memoria));
-            colaDeEspera.enqueue(new Programa("segundo",instrucciones1, nuevoUsuario,recursos,"I3", memoria));
-            colaDeEspera.enqueue(new Programa("tercero",instrucciones2, nuevoUsuarioDos,recursos,"I3", memoria));
-                    
-            while(!colaDeEspera.esVacio()){
-                Programa proceso = colaDeEspera.dequeue();
-                if (!memoria.asignarAParticion(proceso.getTamañoNecesario(), proceso)) {
-                    System.out.println("SE ENCOLA EL PROCESO: " + proceso.getName());
-                    colaDeEspera.enqueue(proceso);
-                }else{
-                    System.out.println("SE ejecuta el PROCESO: " + proceso.getName());
-                    proceso.run();
+            colaDeEspera.enqueue(new Programa("primero",instrucciones0,nuevoUsuario,recursos,"I3", memoria,0));
+            colaDeEspera.enqueue(new Programa("segundo",instrucciones1, nuevoUsuario,recursos,"I3", memoria,0));
+            colaDeEspera.enqueue(new Programa("tercero",instrucciones2, nuevoUsuarioDos,recursos,"I3", memoria,0));
+            while (true){
+                Thread.sleep(10000);     
+                while(!memoria.getCola().esVacio()){
+                    colaDeEspera = memoria.getCola();
+                    colaDeEspera.imprimirCola();
+                    memoria.imprimirMemoria();
+                    Programa proceso = colaDeEspera.dequeue();
+                    if (!memoria.asignarAParticion(proceso.getTamañoNecesario(), proceso)) {
+                        System.out.println("SE ENCOLA EL PROCESO: " + proceso.toString());
+                        colaDeEspera.enqueue(proceso);
+                    }else{
+                        System.out.println("SE ejecuta el PROCESO: " + proceso.toString());
+                        proceso.start();
+                    }
+                    colaDeEspera.imprimirCola();
+                    System.out.println("SE TERMINO LA EJECUCION");
                 }
-            }
-            System.out.println("SE TERMINO LA EJECUCION");
+            }        
         }catch (Exception e) {
         }
     }   

@@ -1,5 +1,8 @@
 package artolagallicchio;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class Programa extends Thread{
     
@@ -14,13 +17,13 @@ public class Programa extends Thread{
     private int quantum;
     private int idParticionAsignada;
     
-    public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido, Memoria memoria){
+    public Programa(String nombre, String[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido, Memoria memoria, int cantInstruccionesEjecutadasTotales){
         this.nombre = nombre;
         this.instrucciones = instrucciones;
         this.usuario = usuario;
         this.recursos = recursos;
         this.cantInstruccionesEjecutadas = 0;
-        this.cantInstruccionesEjecutadasTotales = 0;
+        this.cantInstruccionesEjecutadasTotales = cantInstruccionesEjecutadasTotales;
         this.permisoRequerido = permisoRequerido;
         this.memoria = memoria;
     }
@@ -45,7 +48,7 @@ public class Programa extends Thread{
             this.quantum = 10;
             if (!usuario.TienePermisos(this.permisoRequerido)) {
                 System.out.println("El usuario no tiene permisos para ejecutar este programa");
-                throw new Exception("El usuario no tiene permisos para ejecutar este programa");
+                this.finalize();
             }
             String[] instruccionesAEjecutar = this.memoria.getParticion(this.idParticionAsignada).getInstrucciones();
             for (int i = 0; i < instruccionesAEjecutar.length && this.quantum > 0; i++) {
@@ -76,14 +79,25 @@ public class Programa extends Thread{
                 System.out.println("La instrucción " + instruccionesAEjecutar[i] + " se ejecutó por el programa " + nombre + " por el usuario " + usuario.toString());
             }
             this.memoria.liberarParticion(idParticionAsignada);
+            this.memoria.imprimirMemoria();
             if (this.cantInstruccionesEjecutadas < instruccionesAEjecutar.length) {
+                this.memoria.getCola().imprimirCola();
                 System.out.println("El programa " + nombre + " TERMINÓ POR QUANTUM Y ERA ejecutado por el usuario " + usuario.toString());
-                this.memoria.getCola().enqueue(this);
+                Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.recursos,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales);
+                this.memoria.getCola().enqueue(nuevoPrograma);
+                this.memoria.imprimirMemoria();
+                this.memoria.getCola().imprimirCola();
             }
+            this.finalize();
         }catch (InterruptedException ie) {
-        }catch (Exception e) {
+            this.memoria.liberarParticion(idParticionAsignada);
             System.out.println("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios.");
             this.interrupt();
+        }catch (Exception e) {
+            this.memoria.liberarParticion(idParticionAsignada);
+            this.interrupt();
+        } catch (Throwable ex) {
+            Logger.getLogger(Programa.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

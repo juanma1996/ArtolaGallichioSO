@@ -15,10 +15,10 @@ public class Recurso {
         this.permisoRequerido = permisoRequerido;
     }
     
-    public void instruccion (String instruccion,Usuario usuario, Programa programa) throws Exception{
+    public void instruccion (String instruccion,Usuario usuario, Programa programa) throws Exception, Throwable{
             if (!usuario.TienePermisos(this.permisoRequerido)) {
                 System.out.println("El usuario no tiene permisos para ejecutar este recurso");
-                throw new Exception("El usuario no tiene permisos para ejecutar este recurso");
+                throw new InterruptedException("NotPermissionRequired");
             }
             System.out.println("El recurso " + nombre + " se comenzo a leer/escribir por el programa " + programa.toString() + " y por el usuario: " + usuario.toString());
             switch(instruccion) {
@@ -42,6 +42,10 @@ public class Recurso {
                     System.out.println("El recurso " + nombre + " es liberado por el programa lector " + programa.toString());
                     monitor.SignalNoLectores();
                     break;
+                case "ultima":
+                    
+                    System.out.println("EJECUTAMOS COMPLETO el programa " + programa.toString());
+                    
                 default:
             }
     }

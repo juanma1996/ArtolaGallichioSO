@@ -42,4 +42,16 @@ public class Particion {
     String[] getInstrucciones() {
         return this.instrucciones;
     }
+    
+    @Override
+    public String toString(){
+       String res = "Partición: " + this.id;
+       if (this.enUso) {
+         res += " en uso ";  
+         res += " Cant instrucciones: " + this.instrucciones.length;
+       }else{
+           res += " esta libre ";  
+       }
+       return res;
+    }
 }

@@ -38,6 +38,23 @@ public class ColaDeEspera {
     }
     
     public boolean esVacio(){
-        return this.empty;
+        return empty;
+    }
+
+    public void imprimirCola() {
+        String imp = "Cola de espera: | "; 
+        imp += "se encuentra: ";
+        if (empty) {
+            imp+= "vacia ";
+        }else{
+            imp+="ocupada ";
+        }
+        imp += "Head en: " + head;
+        imp += " Tail en: " + tail + " | ";
+        for (int i = 0; i < tail; i++) {
+            imp += this.colaDeEspera[i].toString() + " | "; 
+        }
+        System.out.println(imp); 
+        System.out.println(""); 
     }
 }
