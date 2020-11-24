@@ -12,12 +12,7 @@ public class ColaDeEspera {
         this.tamaño = tamaño;
     }
     
-    public void enqueue(Programa elem) throws Exception {
-        // Check if the queue is full and throw exception
-        if (head == tail && !empty) {
-            throw new Exception("Cannot enqueue " + elem);
-        }
-
+    public void enqueue(Programa elem) {
         // The queue has space left, enqueue the item
         colaDeEspera[tail] = elem;
         tail        = (tail + 1) % tamaño;

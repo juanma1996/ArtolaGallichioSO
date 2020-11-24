@@ -3,17 +3,13 @@ package artolagallicchio;
 
 public class Particion {
     private int tamaño;
-    private int limiteInferior;
-    private int limiteSuperior;
-    private String[] instrucciones;
+    private Instruccion[] instrucciones;
     private boolean enUso;
     private int id;
     
-    public Particion(int tamaño, int limiteInferior,int limiteSuperior, int idParticion){
+    public Particion(int tamaño, int idParticion){
         this.tamaño = tamaño;
-        this.limiteInferior = limiteInferior;
-        this.limiteSuperior = limiteSuperior;
-        this.instrucciones = new String[tamaño];
+        this.instrucciones = new Instruccion[tamaño];
         this.enUso = false;
         this.id = idParticion;
     }
@@ -22,7 +18,7 @@ public class Particion {
         return (!this.enUso && tamaño <= this.tamaño);
     }
     
-    public void setIntruccionesAEjecutar(String[] instrucciones){
+    public void setIntruccionesAEjecutar(Instruccion[] instrucciones){
         this.instrucciones = instrucciones;
     }
     
@@ -39,15 +35,19 @@ public class Particion {
         this.instrucciones = null;
     }
 
-    String[] getInstrucciones() {
+    Instruccion[] getInstrucciones() {
         return this.instrucciones;
+    }
+    
+    public boolean esParticionEnUso(){
+        return this.enUso;
     }
     
     @Override
     public String toString(){
        String res = "Partición: " + this.id;
        if (this.enUso) {
-         res += " en uso ";  
+         res += " en uso ";
          res += " Cant instrucciones: " + this.instrucciones.length;
        }else{
            res += " esta libre ";  

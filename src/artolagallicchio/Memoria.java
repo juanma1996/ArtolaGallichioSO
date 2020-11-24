@@ -44,6 +44,15 @@ public class Memoria {
         return resultado;
     }
     
+    public boolean hayParticionDisponible(){
+        for (int i = 0; i < this.memoria.length; i++) {
+            if (!this.memoria[i].esParticionEnUso()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void imprimirMemoria(){
         String imp = "Memoria: | "; 
         for (int i = 0; i < this.memoria.length; i++) { 
