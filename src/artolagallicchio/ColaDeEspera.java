@@ -35,6 +35,18 @@ public class ColaDeEspera {
     public boolean esVacio(){
         return empty;
     }
+    
+    public Programa[] getProgramasColaDeEspera(){
+        Programa [] programas = new Programa[this.tail];
+        for (int i = 0; i < this.tail; i++) {
+            programas[i] = this.colaDeEspera[i];
+        }
+        return programas;
+    }
+    
+    public int getTail(){
+        return this.tail;
+    }
 
     public void imprimirCola() {
         String imp = "Cola de espera: | "; 

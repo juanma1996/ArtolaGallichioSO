@@ -1,5 +1,7 @@
 package artolagallicchio;
 
+import java.time.temporal.UnsupportedTemporalTypeException;
+
 
 public class Recurso {
     private String nombre;
@@ -18,7 +20,7 @@ public class Recurso {
     public void ejecutarInstruccion (String instruccion,Usuario usuario, Programa programa, int quantum) throws Exception, Throwable{
             if (!usuario.TienePermisos(this.permisoRequerido)) {
                 programa.imprimirConColor("El usuario no tiene permisos para ejecutar este recurso");
-                throw new UnsupportedOperationException("NotPermissionRequired");
+                throw new UnsupportedTemporalTypeException("NotPermissionRequired");
             }
             switch(instruccion) {
                 case "P":

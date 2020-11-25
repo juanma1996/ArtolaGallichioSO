@@ -1,5 +1,6 @@
 package artolagallicchio;
 
+import java.time.temporal.UnsupportedTemporalTypeException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,7 +10,6 @@ public class Programa extends Thread{
     private String nombre;
     private Instruccion[] instrucciones;
     private Usuario usuario;
-    private Recurso[] recursos;
     private int cantInstruccionesEjecutadasTotales;
     private int cantInstruccionesEjecutadas;
     private String permisoRequerido;
@@ -17,8 +17,10 @@ public class Programa extends Thread{
     private int quantum;
     private int idParticionAsignada;
     private String colorProceso;
+    private int idProceso;
+    private ColasDeEstado colasDeEstado;
     
-    public Programa(String nombre, Instruccion[] instrucciones,Usuario usuario,Recurso[] recursos,String permisoRequerido, Memoria memoria, int cantInstruccionesEjecutadasTotales,String colorProceso){
+    public Programa(String nombre, Instruccion[] instrucciones,Usuario usuario,String permisoRequerido, Memoria memoria, int cantInstruccionesEjecutadasTotales,String colorProceso, int idProceso){
         this.nombre = nombre;
         this.instrucciones = instrucciones;
         this.usuario = usuario;
@@ -27,6 +29,7 @@ public class Programa extends Thread{
         this.permisoRequerido = permisoRequerido;
         this.memoria = memoria;
         this.colorProceso = colorProceso;
+        this.idProceso = idProceso;
     }
     
     public int getTamañoNecesario(){
@@ -49,6 +52,7 @@ public class Programa extends Thread{
             this.quantum = 10000;
             if (!usuario.TienePermisos(this.permisoRequerido)) {
                 imprimirConColor("El usuario no tiene permisos para ejecutar este programa");
+                this.colasDeEstado.getColaDeEjecucion()[this.idProceso].setTerminadoPorPermisosrograma();
                 throw new UnsupportedOperationException();
             }
             Instruccion[] instruccionesAEjecutar = this.memoria.getParticion(this.idParticionAsignada).getInstrucciones();
@@ -57,24 +61,33 @@ public class Programa extends Thread{
                 this.quantum = this.quantum - instruccionesAEjecutar[i].getTiempoDeEjecucion();
                 this.cantInstruccionesEjecutadas++;
                 this.cantInstruccionesEjecutadasTotales++;
+                this.colasDeEstado.getColaDeEjecucion()[this.idProceso].setCantInstruccionesEjecutadas(this.cantInstruccionesEjecutadasTotales);
                 Thread.sleep(2000);
             }
             this.memoria.liberarParticion(idParticionAsignada);
             if (this.cantInstruccionesEjecutadas < instruccionesAEjecutar.length) {
                 imprimirConColor("El programa " + nombre + " TERMINÓ POR QUANTUM Y ERA ejecutado por el usuario " + usuario.toString());
-                Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.recursos,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales,this.colorProceso);
+                Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales,this.colorProceso,this.idProceso);
+                nuevoPrograma.setColaDeEstado(this.colasDeEstado);
                 this.memoria.getCola().enqueue(nuevoPrograma);
             }else{
                 imprimirConColor("El programa " + nombre + " se ejecuto completamente por el usuario: " + usuario.toString());
+                System.out.println(this.colorProceso + this.colasDeEstado.toString() +  "\u001B[0m");
             }
+        }catch (UnsupportedTemporalTypeException e) {
+            this.memoria.liberarParticion(idParticionAsignada);
+            this.colasDeEstado.getColaDeEjecucion()[this.idProceso].setTerminadoPorPermisosRecurso();
+            imprimirConColor("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios sobre el recurso.");
+            this.interrupt();
         }catch (UnsupportedOperationException e) {
             this.memoria.liberarParticion(idParticionAsignada);
-            imprimirConColor("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios.");
+            imprimirConColor("El programa " + nombre + " se interrumpe ya que el usuario: " + usuario.toString() + " no tiene los permisos necesarios sobre el programa.");
             this.interrupt();
         }catch (InterruptedException ie) {
             this.memoria.liberarParticion(idParticionAsignada);
-            imprimirConColor("El programa " + nombre + " TERMINÓ POR QUANTUM Y ERA ejecutado por el usuario " + usuario.toString());
-            Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.recursos,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales,this.colorProceso);
+            imprimirConColor("El programa " + nombre + " terminó por Quantum y era ejecutado por el usuario " + usuario.toString());
+            Programa nuevoPrograma = new Programa(this.nombre,this.instrucciones,this.usuario,this.permisoRequerido,this.memoria,this.cantInstruccionesEjecutadasTotales,this.colorProceso,this.idProceso);
+            nuevoPrograma.setColaDeEstado(this.colasDeEstado);
             this.memoria.getCola().enqueue(nuevoPrograma);
             this.interrupt();
         }catch (Exception e) {
@@ -96,5 +109,21 @@ public class Programa extends Thread{
     
     public void imprimirConColor(String mensaje){
         System.out.println(this.colorProceso + mensaje +  "\u001B[0m");
+    }
+    
+    public int getIdProceso(){
+        return this.idProceso;
+    }
+    
+    public int getCantInstruccionesTotales(){
+        return this.instrucciones.length;
+    }
+    
+    public int getCantInstruccionesEjecutadasTotales(){
+        return this.cantInstruccionesEjecutadasTotales;
+    }
+    
+    public void setColaDeEstado(ColasDeEstado colaDeEstado){
+        this.colasDeEstado = colaDeEstado;
     }
 }

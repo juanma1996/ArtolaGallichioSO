@@ -61,4 +61,8 @@ public class Memoria {
         System.out.println(imp); 
         System.out.println(""); 
     }    
+
+    public void setCola(ColaDeEspera colaDeEspera) {
+        this.colaDeEspera = colaDeEspera;
+    }
 }
